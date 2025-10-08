@@ -90,6 +90,14 @@ rm -f nvim-linux-x86_64.tar.gz
 # URL de descarga
 NVIM_URL="https://github.com/neovim/neovim/releases/download/v0.11.4/nvim-linux-x86_64.tar.gz"
 
+# Test de conectividad antes de descargar
+print_info "Verificando conectividad a internet..."
+if wget --spider --quiet --tries=1 --timeout=5 https://www.google.com; then
+    print_success "Conectividad verificada"
+else
+    print_warning "Problema de conectividad detectado, continuando de todas formas..."
+fi
+
 # Intentar descargar con wget primero (más confiable para GitHub)
 if command -v wget &> /dev/null; then
     print_info "Descargando con wget..."

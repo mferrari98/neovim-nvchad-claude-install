@@ -51,26 +51,18 @@ if command -v apt-get &> /dev/null; then
     sudo apt-get update
     
     # Instalar dependencias básicas (incluyendo wget como alternativa a curl)
-    sudo apt-get install -y curl wget git tar gzip ripgrep fd-find ca-certificates
-    
-    # Verificar si Node.js ya está instalado
-    if command -v node &> /dev/null; then
-        NODE_VERSION=$(node --version)
-        print_success "Node.js ya está instalado: $NODE_VERSION"
-        
-        # Verificar si npm está instalado
-        if ! command -v npm &> /dev/null; then
-            print_info "Instalando npm usando el gestor de Node.js..."
-            # Instalar npm usando npm (viene con nodesource)
-            curl -qL https://www.npmjs.com/install.sh | sudo bash
-        else
-            NPM_VERSION=$(npm --version)
-            print_success "npm ya está instalado: v$NPM_VERSION"
-        fi
-    else
-        print_info "Instalando Node.js y npm..."
-        sudo apt-get install -y nodejs npm
+    sudo apt-get install -y curl wget git tar gzip ripgrep fd-find ca-certificates nodejs npm
+
+    print_info "Configurando npm para instalaciones globales de usuario..."
+    mkdir -p ~/.npm-global
+    npm config set prefix '~/.npm-global'
+
+    if ! grep -q '.npm-global/bin' ~/.bashrc; then
+        echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.bashrc
     fi
+
+    export PATH=~/.npm-global/bin:$PATH
+    print_success "Node.js y npm configurados correctamente"
     
 elif command -v dnf &> /dev/null; then
     PKG_MANAGER="dnf"
@@ -176,11 +168,19 @@ print_info "La primera vez que abras Neovim, se instalarán los plugins automát
 # 4. INSTALAR CLAUDE CODE
 print_info "Instalando Claude Code..."
 
-# Instalar Claude Code globalmente con npm
-sudo npm install -g @anthropic-ai/claude-code
+# Instalar Claude Code usando npm (sin sudo)
+npm install -g @anthropic-ai/claude-code
 
 print_success "Claude Code instalado correctamente"
-print_info "Verifica la instalación con: claude --version"
+
+# Verificar instalación
+if command -v claude &> /dev/null; then
+    CLAUDE_VERSION=$(claude --version 2>/dev/null || echo "instalado")
+    print_success "Claude Code verificado: $CLAUDE_VERSION"
+else
+    print_warning "Claude Code instalado pero no está en el PATH actual"
+    print_info "Ejecuta 'source ~/.bashrc' para cargar el PATH actualizado"
+fi
 
 # RESUMEN FINAL
 echo ""

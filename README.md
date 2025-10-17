@@ -1,111 +1,116 @@
-# Neovim + NvChad + Claude Code Installer
+# Instalador Automatizado de Neovim + NvChad
 
-Script automatizado para instalar y configurar un entorno de desarrollo completo con Neovim, NvChad y Claude Code en sistemas Linux.
+Script de instalación automatizada que configura un entorno de desarrollo completo basado en Neovim con configuración NvChad en sistemas Linux.
 
-## 🚀 Estado Actual
+## Componentes Instalados
 
-✅ **Instalador completamente funcional**
-- Instalación de Neovim v0.11.4
-- Configuración de NvChad (starter)
-- Instalación de Claude Code
-- Sistema de reintentos y fallbacks
-- Manejo robusto de descargas (wget/curl)
-- Configuración automática de npm global sin sudo
+### Software Principal
+- **Neovim v0.11.4**: Editor de texto moderno instalado en `/opt/nvim`
+- **NvChad**: Framework de configuración para Neovim con interfaz moderna y conjunto de plugins preconfigurados
+- **CLI de IA**: Herramienta de línea de comandos para asistencia de código
 
-## ¿Qué instala este script?
+### Dependencias del Sistema
+El script instala y configura automáticamente:
+- **Git**: Control de versiones
+- **Node.js y npm**: Runtime JavaScript (configurado para instalaciones globales en `~/.npm-global` sin privilegios de root)
+- **Ripgrep**: Herramienta de búsqueda rápida en archivos
+- **fd-find**: Búsqueda de archivos y directorios
+- **wget/curl**: Gestores de descarga (con fallback automático)
+- **tar, gzip**: Compresión y descompresión
+- **ca-certificates**: Certificados para conexiones seguras
 
-Este instalador configura automáticamente:
-
-- **Neovim v0.11.4**: Editor de texto moderno y extensible
-- **NvChad**: Configuración pre-hecha de Neovim con una interfaz moderna y plugins esenciales
-- **Claude Code**: CLI oficial de Anthropic para interactuar con Claude desde la terminal
-
-## Dependencias instaladas
-
-El script también instala las dependencias necesarias:
-
-- Git
-- Node.js y npm (configurado para instalaciones globales sin sudo)
-- Ripgrep (búsqueda de archivos rápida)
-- fd-find (búsqueda de archivos)
-- curl/wget (con fallback automático)
-- tar, gzip
-- ca-certificates
-
-## Sistemas soportados
+## Sistemas Soportados
 
 - ✅ Debian/Ubuntu (apt)
-- ✅ Fedora/RHEL (dnf)
 - ✅ Arch Linux (pacman)
 
 ## Instalación
 
 ```bash
-# Clonar el repositorio
 git clone https://github.com/mferrari98/neovim-nvchad-claude-install.git
 cd neovim-nvchad-claude-install
-
-# Ejecutar el instalador
 chmod +x install.sh
 ./install.sh
 ```
 
-⚠️ **Nota**: No ejecutes el script como root o con sudo. El script solicitará permisos elevados cuando sea necesario.
+⚠️ **Importante**: No ejecutar como root. El script solicita privilegios elevados automáticamente cuando es necesario.
 
-## Características
+## Funcionamiento del Script
 
-- ✅ Detección automática del gestor de paquetes
-- ✅ Backup automático de configuraciones existentes (timestamped)
-- ✅ Manejo de errores con reintentos (hasta 3 intentos)
-- ✅ Output con colores para mejor legibilidad
-- ✅ Descarga con fallback (wget → curl)
-- ✅ Configuración de npm global sin permisos de sudo
-- ✅ Verificación de instalación exitosa
-- ✅ Protección contra ejecución como root
+### 1. Detección del Sistema
+- Identifica automáticamente el gestor de paquetes (apt/pacman)
+- Verifica conectividad a internet
 
-## Post-instalación
+### 2. Instalación de Dependencias
+- Actualiza repositorios del sistema
+- Instala paquetes base requeridos
+- Verifica o instala Node.js/npm según disponibilidad
 
-Después de ejecutar el script:
+### 3. Configuración de npm
+- Crea directorio `~/.npm-global` para paquetes globales
+- Configura npm para instalaciones sin privilegios de root
+- Actualiza PATH en archivo de configuración del shell (~/.bashrc o ~/.config/fish/config.fish)
 
-1. Reinicia tu terminal o ejecuta `source ~/.bashrc`
-2. Ejecuta `nvim` para inicializar NvChad (instalará plugins automáticamente)
-3. Configura Claude Code: `claude auth login`
+### 4. Instalación de Neovim
+- Descarga binario precompilado de Neovim v0.11.4
+- Extrae a `/opt/nvim`
+- Crea enlace simbólico en `/usr/local/bin/nvim`
 
-## Uso
+### 5. Configuración de NvChad
+- Crea backup con timestamp de configuraciones Neovim existentes
+- Clona repositorio starter de NvChad a `~/.config/nvim`
+- Prepara entorno para instalación automática de plugins en primer inicio
 
-- **Neovim**: `nvim [archivo]`
-- **Claude Code**: `claude [comando]`
+### 6. Instalación de Herramientas CLI
+- Instala paquete npm global de asistencia de código
+- Verifica disponibilidad en PATH
 
-## Estructura de instalación
+## Post-Instalación
+
+1. Recargar configuración del shell: `source ~/.bashrc`
+2. Inicializar Neovim: `nvim` (instalará plugins automáticamente en primer uso)
+3. Configurar CLI de IA con autenticación según sea necesario
+
+## Estructura de Directorios
 
 ```
 /opt/nvim/                          # Binarios de Neovim
 ~/.config/nvim/                     # Configuración de NvChad
 ~/.local/share/nvim/                # Datos y plugins
-~/.npm-global/                      # Paquetes npm globales (sin sudo)
+~/.npm-global/                      # Paquetes npm globales
 ```
 
-## Solución de problemas
+## Características Técnicas
 
-### Claude Code no se encuentra después de instalar
+- Detección automática del gestor de paquetes del sistema
+- Sistema de backups automáticos con timestamps
+- Verificación de conectividad antes de descargas
+- Manejo de errores con reintentos (hasta 3 intentos)
+- Protección contra ejecución como root
+- Output colorizado para mejor legibilidad
+- Configuración de PATH persistente según shell detectado
+
+## Solución de Problemas
+
+### Comando no encontrado después de instalar
 ```bash
-source ~/.bashrc
-# o reinicia tu terminal
+source ~/.bashrc  # o reinicia la terminal
 ```
 
 ### Error de permisos con npm
-El script configura npm automáticamente para instalar paquetes globales sin sudo en `~/.npm-global/`
+El script configura automáticamente npm para instalaciones en `~/.npm-global/` sin requerir privilegios de root.
 
-### Restaurar configuración previa
-Los backups se crean automáticamente con timestamp:
-```bash
+### Restaurar configuración anterior
+Los backups se crean automáticamente:
+```
 ~/.config/nvim.backup.YYYYMMDD_HHMMSS
 ~/.local/share/nvim.backup.YYYYMMDD_HHMMSS
+~/.local/state/nvim.backup.YYYYMMDD_HHMMSS
 ```
 
-## Autor
+## Desinstalación
 
-Creado por mferrari98
+Ejecutar el script `uninstall.sh` incluido en el repositorio para remover todos los componentes instalados.
 
 ## Licencia
 
